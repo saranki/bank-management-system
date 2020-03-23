@@ -5,6 +5,7 @@
             <log description="Log" level="custom">
                 <property expression="get-property('transport', 'X-JWT-Assertion')" name="ADD_JWT"/>
             </log>
+            <sequence key="JWTDecoder"/>
             <send>
                 <endpoint>
                     <address uri="https://my-json-server.typicode.com">
