@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="ProcessAPI" groupId="com.example.ProcessAPI.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/ProcessAPI.xml</file>
+    </artifact>
+    <artifact name="AccountEP" groupId="com.example.ProcessAPI.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AccountEP.xml</file>
+    </artifact>
+    <artifact name="JWTDecoder" groupId="com.example.ProcessAPI.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/JWTDecoder.xml</file>
+    </artifact>
+</artifacts>

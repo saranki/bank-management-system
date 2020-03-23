@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/domain/1.0.0" name="ProcessAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/saranki/account-json-backend/accounts/">
+        <inSequence>
+            <log description="Log" level="custom">
+                <property expression="get-property('transport', 'X-JWT-Assertion')" name="ADD_JWT"/>
+            </log>
+            <send>
+                <endpoint>
+                    <address uri="https://my-json-server.typicode.com">
+                        <suspendOnFailure>
+                            <initialDuration>-1</initialDuration>
+                            <progressionFactor>-1</progressionFactor>
+                            <maximumDuration>0</maximumDuration>
+                        </suspendOnFailure>
+                        <markForSuspension>
+                            <retriesBeforeSuspension>0</retriesBeforeSuspension>
+                        </markForSuspension>
+                    </address>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <respond/>
+        </outSequence>
+        <faultSequence/>
+    </resource>
+    <resource methods="GET" uri-template="/saranki/account-json-backend/accounts/{id}">
+        <inSequence>
+            <header action="remove" name="Accept-Encoding" scope="transport"/>
+            <log description="Account ID Log" level="custom">
+                <property expression="get-property('uri.var.id')" name="id"/>
+            </log>
+            <send>
+                <endpoint>
+                    <address uri="https://my-json-server.typicode.com">
+                        <suspendOnFailure>
+                            <initialDuration>-1</initialDuration>
+                            <progressionFactor>-1</progressionFactor>
+                            <maximumDuration>0</maximumDuration>
+                        </suspendOnFailure>
+                        <markForSuspension>
+                            <retriesBeforeSuspension>0</retriesBeforeSuspension>
+                        </markForSuspension>
+                    </address>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <property expression="$body/node()/id mod 2" name="criteria" scope="default" type="STRING"/>
+            <filter regex="1.0" source="get-property('criteria')">
+                <then>
+                    <property description="JSON to XML Conversion" name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                    <respond/>
+                </then>
+                <else>
+                    <respond/>
+                </else>
+            </filter>
+        </outSequence>
+        <faultSequence/>
+    </resource>
+    <resource methods="GET" uri-template="/v2/5e70e96a300000da9b7a3312">
+        <inSequence>
+            <send>
+                <endpoint>
+                    <address uri="http://www.mocky.io">
+                        <suspendOnFailure>
+                            <initialDuration>-1</initialDuration>
+                            <progressionFactor>-1</progressionFactor>
+                            <maximumDuration>0</maximumDuration>
+                        </suspendOnFailure>
+                        <markForSuspension>
+                            <retriesBeforeSuspension>0</retriesBeforeSuspension>
+                        </markForSuspension>
+                    </address>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <property description="XML to JSON Conversion" name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <respond/>
+        </outSequence>
+        <faultSequence/>
+    </resource>
+</api>

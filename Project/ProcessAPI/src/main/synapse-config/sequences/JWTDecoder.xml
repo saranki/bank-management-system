@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="JWTDecoder" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property description="Get JWT Header" expression="get-property('transport', 'X-JWT-Assertion')" name="JWTHeader" scope="default" type="STRING"/>
+    <log description="JWT Log" level="custom">
+        <property expression="fn:concat('Retrieved JWT information: JWT Header before - > ', get-property('JWTHeader'))" name="JWT Info"/>
+    </log>
+    <class name="com.demo.JWTTokenMediator"/>
+    <log level="full"/>
+</sequence>
