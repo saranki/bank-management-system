@@ -42,7 +42,6 @@ public class JWTTokenMediator extends AbstractMediator {
 		 String jwtValue = getJWTHeader();
 		 String retrievedRole = retrieveRole(jwtValue);
 		 if(retrievedRole == null) {
-			 context.setProperty(PROPERTY, jwtValue);
 		 return false;
 		 }
 		 context.setProperty(PROPERTY, retrievedRole);
