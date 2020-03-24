@@ -2,10 +2,16 @@
 <api context="/domain/1.0.0" name="ProcessAPI" xmlns="http://ws.apache.org/ns/synapse">
     <resource methods="GET" uri-template="/saranki/account-json-backend/accounts/">
         <inSequence>
-            <log description="Log" level="custom">
-                <property expression="get-property('transport', 'X-JWT-Assertion')" name="ADD_JWT"/>
+            <log description="JWT Log" level="custom">
+                <property expression="fn:concat('JWT Header - > ', get-property('transport', 'X-JWT-Assertion'))" name="JWT Info"/>
             </log>
-            <sequence key="JWTDecoder"/>
+            <class name="com.demo.JWTTokenMediator">
+                <property expression="$trp:X-JWT-Assertion" name="JWTHeader"/>
+            </class>
+            <property description="Get Role" expression="get-property('role')" name="role" scope="default" type="STRING"/>
+            <log description="Role" level="custom">
+                <property expression="fn:concat('Role: ', get-property('role'))" name="Role Info"/>
+            </log>
             <send>
                 <endpoint>
                     <address uri="https://my-json-server.typicode.com">
