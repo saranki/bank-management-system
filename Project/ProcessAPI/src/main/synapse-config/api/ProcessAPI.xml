@@ -3,15 +3,9 @@
     <resource methods="GET" uri-template="/saranki/account-json-backend/accounts/">
         <inSequence>
             <log description="JWT Log" level="custom">
-                <property expression="fn:concat('JWT Header - > ', get-property('transport', 'X-JWT-Assertion'))" name="JWT Info"/>
+                <property expression="fn:concat('JWT: ', get-property('transport', 'X-JWT-Assertion'))" name="JWT Info"/>
             </log>
-            <class name="com.demo.JWTTokenMediator">
-                <property expression="$trp:X-JWT-Assertion" name="JWTHeader"/>
-            </class>
-            <property description="Get Role" expression="get-property('role')" name="role" scope="default" type="STRING"/>
-            <log description="Role" level="custom">
-                <property expression="fn:concat('Role: ', get-property('role'))" name="Role Info"/>
-            </log>
+            <sequence key="JWTDecoder"/>
             <send>
                 <endpoint>
                     <address uri="https://my-json-server.typicode.com">
@@ -35,6 +29,7 @@
     <resource methods="GET" uri-template="/saranki/account-json-backend/accounts/{id}">
         <inSequence>
             <header action="remove" name="Accept-Encoding" scope="transport"/>
+            <sequence key="JWTDecoder"/>
             <log description="Account ID Log" level="custom">
                 <property expression="get-property('uri.var.id')" name="id"/>
             </log>
@@ -67,7 +62,7 @@
         </outSequence>
         <faultSequence/>
     </resource>
-    <resource methods="GET" uri-template="/v2/5e70e96a300000da9b7a3312">
+    <resource methods="GET" uri-template="/v2/5e7afd02300000e5c99310d7">
         <inSequence>
             <send>
                 <endpoint>
@@ -86,6 +81,48 @@
         </inSequence>
         <outSequence>
             <property description="XML to JSON Conversion" name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <respond/>
+        </outSequence>
+        <faultSequence/>
+    </resource>
+    <resource methods="GET" uri-template="/saranki/bank-json-backend/banks/{id}">
+        <inSequence>
+            <header action="remove" name="Accept-Encoding" scope="transport"/>
+            <log description="Bank ID Log" level="custom">
+                <property expression="get-property('uri.var.id')" name="id"/>
+            </log>
+            <sequence key="JWTDecoder"/>
+            <send>
+                <endpoint>
+                    <address uri="https://my-json-server.typicode.com">
+                        <suspendOnFailure>
+                            <initialDuration>-1</initialDuration>
+                            <progressionFactor>-1</progressionFactor>
+                            <maximumDuration>0</maximumDuration>
+                        </suspendOnFailure>
+                        <markForSuspension>
+                            <retriesBeforeSuspension>0</retriesBeforeSuspension>
+                        </markForSuspension>
+                    </address>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <switch source="get-property('role')">
+                <case regex=".*manager.*">
+                    <enrich>
+                        <source clone="true" type="inline">{ "verifiedBy": "manager" }</source>
+                        <target action="child" xpath="json-eval($)"/>
+                    </enrich>
+                </case>
+                <case regex=".*admin.*">
+                    <enrich>
+                        <source clone="true" type="inline">{ "verifiedBy": "administrator" }</source>
+                        <target action="child" xpath="json-eval($)"/>
+                    </enrich>
+                </case>
+                <default/>
+            </switch>
             <respond/>
         </outSequence>
         <faultSequence/>
